@@ -8,6 +8,7 @@ import (
 	"math"
 	"os"
 	"os/exec"
+	"time"
 )
 
 type Circuit interface {
@@ -29,6 +30,8 @@ func Nyquist_plot(circuit Circuit, filename string, min_logF float64, max_logF f
 	writer := csv.NewWriter(file)
 	defer writer.Flush()
 
+	Computation_start := time.Now()
+
 	var logf float64
 	for logf = min_logF; logf <= max_logF; logf += decade_interval {
 		freq := math.Pow(10, logf)
@@ -37,7 +40,9 @@ func Nyquist_plot(circuit Circuit, filename string, min_logF float64, max_logF f
 		writer.Write([]string{fmt.Sprintf("%.5f", math.Pow(10, logf)), fmt.Sprintf("%.5f", r), fmt.Sprintf("%.5f", i)})
 	}
 
-	command := exec.Command("gnuplot", "-p", "recipeBodeNyq.gp")
+	fmt.Println("Nyquist plot computation time: ", time.Since(Computation_start))
+
+	command := exec.Command("gnuplot", "-p", "Recipes/recipeBodeNyq.gp")
 	err = command.Run()
 
 	if err != nil {
@@ -64,6 +69,7 @@ func Bode(circuit Circuit, filename string, min_logF float64, max_logF float64, 
 	writer := csv.NewWriter(file)
 	defer writer.Flush()
 
+	Computation_start := time.Now()
 	var logf float64
 	for logf = min_logF; logf <= max_logF; logf += decade_interval {
 		freq := math.Pow(10, logf)
@@ -74,7 +80,9 @@ func Bode(circuit Circuit, filename string, min_logF float64, max_logF float64, 
 		writer.Write([]string{fmt.Sprintf("%.5f", math.Pow(10, logf)), fmt.Sprintf("%.5f", mag), fmt.Sprintf("%.5f", phase)})
 	}
 
-	command := exec.Command("gnuplot", "-p", "boderecipe.gp")
+	fmt.Println("BodePlot plot computation time: ", time.Since(Computation_start))
+
+	command := exec.Command("gnuplot", "-p", "Recipes/boderecipe.gp")
 	err = command.Run()
 
 	if err != nil {

@@ -16,6 +16,6 @@ func main() {
 		C2: dipoles.Capacitor{Capacitance: 1e-9},
 	}
 
-	circuits.Nyquist_plot(equivalent, "Nyq.csv", 0.0, 6.0, 100)
-	circuits.Bode(equivalent, "Bode.csv", 0.0, 6.0, 100)
+	circuits.Nyquist_plot(equivalent, "OutputFiles/Nyq.csv", 0.0, 6.0, 100)
+	circuits.Bode(equivalent, "OutputFiles/Bode.csv", 0.0, 6.0, 100)
 }

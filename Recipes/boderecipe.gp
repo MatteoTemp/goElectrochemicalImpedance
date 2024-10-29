@@ -14,4 +14,4 @@ set ylabel "log|H|"
 set y2label "phi(H) / deg"
 set xlabel "log freq / Hz"
 
-plot 'Bode.csv' using 1:2 with lines axis x1y1 , 'Bode.csv' using 1:3 with lines axis x1y2
+plot 'OutputFiles/Bode.csv' using 1:2 with lines axis x1y1 , 'OutputFiles/Bode.csv' using 1:3 with lines axis x1y2

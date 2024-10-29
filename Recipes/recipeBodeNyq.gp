@@ -3,4 +3,4 @@ set grid
 
 set ylabel "-Im(H) / Ohm"
 set xlabel "Re(H)/ Ohm"
-plot 'Nyq.csv' using 2:3 with lines
+plot 'OutputFiles/Nyq.csv' using 2:3 with lines
