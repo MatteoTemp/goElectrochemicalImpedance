@@ -8,11 +8,14 @@ import (
 
 func main() {
 
-	equivalent := circuits.RCHighpass{
-		Resistor:  dipoles.Resistor{Resistance: 100},
-		Capacitor: dipoles.Capacitor{Capacitance: 1e-6},
+	equivalent := circuits.RCBandPass{
+		R1: dipoles.Resistor{Resistance: 10000},
+		C1: dipoles.Capacitor{Capacitance: 100e-9},
+
+		R2: dipoles.Resistor{Resistance: 5000},
+		C2: dipoles.Capacitor{Capacitance: 1e-9},
 	}
 
-	circuits.Nyquist_plot(equivalent, "Nyq.csv", 8.0, 100)
-	circuits.Bode(equivalent, "Bode.csv", 8.0, 100)
+	circuits.Nyquist_plot(equivalent, "Nyq.csv", 0.0, 6.0, 100)
+	circuits.Bode(equivalent, "Bode.csv", 0.0, 6.0, 100)
 }

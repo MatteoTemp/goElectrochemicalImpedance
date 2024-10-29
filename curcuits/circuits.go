@@ -14,7 +14,7 @@ type Circuit interface {
 	FreqResponse(float64) complex128
 }
 
-func Nyquist_plot(circuit Circuit, filename string, max_logF float64, ppdec int) error {
+func Nyquist_plot(circuit Circuit, filename string, min_logF float64, max_logF float64, ppdec int) error {
 	if max_logF < 0 {
 		return errors.New("Upper bound cannot be nagative")
 	}
@@ -30,7 +30,7 @@ func Nyquist_plot(circuit Circuit, filename string, max_logF float64, ppdec int)
 	defer writer.Flush()
 
 	var logf float64
-	for logf = 0.0; logf <= max_logF; logf += decade_interval {
+	for logf = min_logF; logf <= max_logF; logf += decade_interval {
 		freq := math.Pow(10, logf)
 		r, i := dipoles.Nyquist(circuit.FreqResponse(freq))
 
@@ -48,7 +48,7 @@ func Nyquist_plot(circuit Circuit, filename string, max_logF float64, ppdec int)
 	return nil
 }
 
-func Bode(circuit Circuit, filename string, max_logF float64, ppdec int) error {
+func Bode(circuit Circuit, filename string, min_logF float64, max_logF float64, ppdec int) error {
 
 	if max_logF < 0 {
 		return errors.New("Upper bound cannot be nagative")
@@ -65,7 +65,7 @@ func Bode(circuit Circuit, filename string, max_logF float64, ppdec int) error {
 	defer writer.Flush()
 
 	var logf float64
-	for logf = -1.0; logf <= max_logF; logf += decade_interval {
+	for logf = min_logF; logf <= max_logF; logf += decade_interval {
 		freq := math.Pow(10, logf)
 		r, i := dipoles.Nyquist(circuit.FreqResponse(freq))
 		mag := math.Log10(math.Hypot(r, i))
@@ -118,4 +118,20 @@ type RCHighpass struct {
 func (parts RCHighpass) FreqResponse(freq float64) complex128 {
 	z_tot := (parts.Resistor.Impedance(freq) + parts.Capacitor.Impedance(freq))
 	return parts.Resistor.Impedance(freq) / z_tot
+}
+
+type RCBandPass struct {
+	R1 dipoles.Resistor
+	C1 dipoles.Capacitor
+
+	R2 dipoles.Resistor
+	C2 dipoles.Capacitor
+}
+
+func (parts RCBandPass) FreqResponse(freq float64) complex128 {
+
+	HPResponse := parts.C1.Impedance(freq) / (parts.R1.Impedance(freq) + parts.C1.Impedance(freq))
+	LPResponse := parts.R2.Impedance(freq) / (parts.R2.Impedance(freq) + parts.C2.Impedance(freq))
+
+	return HPResponse * LPResponse
 }
