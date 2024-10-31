@@ -138,8 +138,6 @@ type RCBandPass struct {
 
 func (parts RCBandPass) FreqResponse(freq float64) complex128 {
 
-	HPResponse := parts.C1.Impedance(freq) / (parts.R1.Impedance(freq) + parts.C1.Impedance(freq))
-	LPResponse := parts.R2.Impedance(freq) / (parts.R2.Impedance(freq) + parts.C2.Impedance(freq))
-
-	return HPResponse * LPResponse
+	//Da implementare correttamente
+	return 0
 }
