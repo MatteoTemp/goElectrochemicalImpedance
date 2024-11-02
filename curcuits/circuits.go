@@ -6,6 +6,7 @@ import (
 	"fmt"
 	dipoles "goEl/lib"
 	"math"
+	"math/cmplx"
 	"os"
 	"os/exec"
 	"time"
@@ -37,7 +38,7 @@ func Nyquist_plot(circuit Circuit, filename string, min_logF float64, max_logF f
 		freq := math.Pow(10, logf)
 		r, i := dipoles.Nyquist(circuit.FreqResponse(freq))
 
-		writer.Write([]string{fmt.Sprintf("%.5f", math.Pow(10, logf)), fmt.Sprintf("%.5f", r), fmt.Sprintf("%.5f", i)})
+		writer.Write([]string{fmt.Sprintf("%f", math.Pow(10, logf)), fmt.Sprintf("%f", r), fmt.Sprintf("%f", -i)})
 	}
 
 	fmt.Println("Nyquist plot computation time: ", time.Since(Computation_start))
@@ -73,11 +74,12 @@ func Bode(circuit Circuit, filename string, min_logF float64, max_logF float64, 
 	var logf float64
 	for logf = min_logF; logf <= max_logF; logf += decade_interval {
 		freq := math.Pow(10, logf)
-		r, i := dipoles.Nyquist(circuit.FreqResponse(freq))
-		mag := math.Log10(math.Hypot(r, i))
-		phase := -math.Atan(i/r) * 180 / math.Pi
 
-		writer.Write([]string{fmt.Sprintf("%.5f", math.Pow(10, logf)), fmt.Sprintf("%.5f", mag), fmt.Sprintf("%.5f", phase)})
+		H := circuit.FreqResponse(freq)
+		mag := math.Log10(cmplx.Abs(H))
+		phase := cmplx.Phase(H) * 180 / math.Pi
+
+		writer.Write([]string{fmt.Sprintf("%f", math.Pow(10, logf)), fmt.Sprintf("%f", mag), fmt.Sprintf("%f", phase)})
 	}
 
 	fmt.Println("BodePlot plot computation time: ", time.Since(Computation_start))
@@ -140,4 +142,31 @@ func (parts RCBandPass) FreqResponse(freq float64) complex128 {
 
 	//Da implementare correttamente
 	return 0
+}
+
+type IdealLCSeries struct {
+	C dipoles.Capacitor
+	L dipoles.Inductor
+}
+
+func (parts IdealLCSeries) FreqResponse(freq float64) complex128 {
+
+	series_impedance := parts.L.Impedance(freq) + parts.C.Impedance(freq)
+
+	return parts.C.Impedance(freq) / series_impedance
+
+}
+
+type RealLCSeries struct {
+	R dipoles.Resistor
+	C dipoles.Capacitor
+	L dipoles.Inductor
+}
+
+func (parts RealLCSeries) FreqResponse(freq float64) complex128 {
+
+	series_impedance := parts.L.Impedance(freq) + parts.C.Impedance(freq) + parts.R.Impedance(freq)
+
+	return parts.C.Impedance(freq) / series_impedance
+
 }

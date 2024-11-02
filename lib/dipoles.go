@@ -8,7 +8,7 @@ import (
 func Nyquist(Z complex128) (float64, float64) {
 	Re := real(Z)
 	Im := imag(Z)
-	return Re, -Im
+	return Re, Im
 }
 
 type Dipole interface {
