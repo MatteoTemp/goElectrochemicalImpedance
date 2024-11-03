@@ -19,3 +19,5 @@
 
 # Go workspace file
 go.work
+OutputFiles/Bode.csv
+OutputFiles/Nyq.csv
