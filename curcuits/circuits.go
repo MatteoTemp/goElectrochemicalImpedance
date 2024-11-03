@@ -77,7 +77,7 @@ func Bode(circuit Circuit, filename string, min_logF float64, max_logF float64, 
 
 		H := circuit.FreqResponse(freq)
 		mag := math.Log10(cmplx.Abs(H))
-		phase := cmplx.Phase(H) * 180 / math.Pi
+		phase := -cmplx.Phase(H) * 180 / math.Pi
 
 		writer.Write([]string{fmt.Sprintf("%f", math.Pow(10, logf)), fmt.Sprintf("%f", mag), fmt.Sprintf("%f", phase)})
 	}
@@ -169,4 +169,17 @@ func (parts RealLCSeries) FreqResponse(freq float64) complex128 {
 
 	return parts.C.Impedance(freq) / series_impedance
 
+}
+
+type RCLBandpass struct {
+	R dipoles.Resistor
+	C dipoles.Capacitor
+	L dipoles.Inductor
+}
+
+func (parts RCLBandpass) FreqResponse(freq float64) complex128 {
+
+	LC_tank := dipoles.Parallel(parts.L, parts.C, freq)
+
+	return LC_tank / (parts.R.Impedance(freq) + LC_tank)
 }
