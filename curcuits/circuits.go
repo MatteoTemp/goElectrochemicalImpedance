@@ -109,6 +109,24 @@ func (parts Randles) FreqResponse(freq float64) complex128 {
 	return z2 + parts.Solution_rasistance.Impedance(freq)
 }
 
+type LiIon struct {
+	WireR     dipoles.Resistor
+	Rsei      dipoles.Resistor
+	Csei      dipoles.Capacitor
+	Rct       dipoles.Resistor
+	Cct       dipoles.Capacitor
+	Diffusion dipoles.Warburg
+}
+
+func (parts LiIon) FreqResponse(freq float64) complex128 {
+	total_impedance := parts.WireR.Impedance(freq)
+	total_impedance += dipoles.Parallel(parts.Csei, parts.Rsei, freq)
+
+	total_impedance += dipoles.Parallel(parts.Cct, parts.Rct, freq) + parts.Diffusion.Impedance(freq)
+
+	return total_impedance
+}
+
 type RCLowpass struct {
 	Resistor  dipoles.Resistor
 	Capacitor dipoles.Capacitor
