@@ -38,7 +38,7 @@ func Nyquist_plot(circuit Circuit, filename string, min_logF float64, max_logF f
 		freq := math.Pow(10, logf)
 		r, i := dipoles.Nyquist(circuit.FreqResponse(freq))
 
-		writer.Write([]string{fmt.Sprintf("%f", math.Pow(10, logf)), fmt.Sprintf("%f", r), fmt.Sprintf("%f", -i)})
+		writer.Write([]string{fmt.Sprintf("%.9f", math.Pow(10, logf)), fmt.Sprintf("%.9f", r), fmt.Sprintf("%.9f", -i)})
 	}
 
 	fmt.Println("Nyquist plot computation time: ", time.Since(Computation_start))
@@ -79,7 +79,7 @@ func Bode(circuit Circuit, filename string, min_logF float64, max_logF float64, 
 		mag := math.Log10(cmplx.Abs(H))
 		phase := -cmplx.Phase(H) * 180 / math.Pi
 
-		writer.Write([]string{fmt.Sprintf("%f", math.Pow(10, logf)), fmt.Sprintf("%f", mag), fmt.Sprintf("%f", phase)})
+		writer.Write([]string{fmt.Sprintf("%.9f", math.Pow(10, logf)), fmt.Sprintf("%.9f", mag), fmt.Sprintf("%.9f", phase)})
 	}
 
 	fmt.Println("BodePlot plot computation time: ", time.Since(Computation_start))
