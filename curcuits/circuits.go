@@ -95,6 +95,15 @@ func Bode(circuit Circuit, filename string, min_logF float64, max_logF float64, 
 	return nil
 }
 
+type IdealNPElectrode struct {
+	SolutionResistance dipoles.Resistor
+	InterphaseCapacity dipoles.Capacitor
+}
+
+func (parts IdealNPElectrode) FreqResponse(freq float64) complex128 {
+	return dipoles.Series(parts.InterphaseCapacity, parts.SolutionResistance, freq)
+}
+
 type Randles struct {
 	Solution_rasistance   dipoles.Resistor
 	Reaction_resistance   dipoles.Resistor

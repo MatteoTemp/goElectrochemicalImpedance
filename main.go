@@ -1,25 +1,20 @@
 package main
 
 import (
-	"goEl/lexer"
+	circuits "goEl/curcuits"
+	dipoles "goEl/lib"
 )
 
 //cmath "math/cmplx"
 
 func main() {
 
-	cirtcuit_descriprion := "R(CR)"
-
-	cd := lexer.Init(cirtcuit_descriprion)
-
-	if err1 := cd.Tokenize(); err1 != nil {
-		panic("Error reading tokens, ")
+	circuit := circuits.IdealNPElectrode{
+		SolutionResistance: dipoles.Resistor{Resistance: 1000},
+		InterphaseCapacity: dipoles.Capacitor{Capacitance: 1e-6},
 	}
 
-	if err2 := cd.MatchBrakets(); err2 != nil {
-		panic("matching error")
-	}
-
-	cd.Display()
+	circuits.Nyquist_plot(circuit, "OutputFiles/Nyq.csv", -1, 1, 100)
+	circuits.Bode(circuit, "OutputFiles/Bode.csv", -1, 6, 100)
 
 }
