@@ -118,95 +118,30 @@ func (parts Randles) FreqResponse(freq float64) complex128 {
 	return z2 + parts.Solution_rasistance.Impedance(freq)
 }
 
-type LiIon struct {
-	WireR     dipoles.Resistor
-	Rsei      dipoles.Resistor
-	Csei      dipoles.Capacitor
-	Rct       dipoles.Resistor
-	Cct       dipoles.Capacitor
-	Diffusion dipoles.Warburg
+type RandlesTB struct {
+	Solution_rasistance   dipoles.Resistor
+	Reaction_resistance   dipoles.Resistor
+	Double_layer_capacity dipoles.Capacitor
+	Diffusion_impedance   dipoles.WarburgTrasmissive
 }
 
-func (parts LiIon) FreqResponse(freq float64) complex128 {
-	total_impedance := parts.WireR.Impedance(freq)
-	total_impedance += dipoles.Parallel(parts.Csei, parts.Rsei, freq)
+func (parts RandlesTB) FreqResponse(freq float64) complex128 {
+	z1 := parts.Reaction_resistance.Impedance(freq) + parts.Diffusion_impedance.Impedance(freq)
+	z2 := 1 / (1/z1 + 1/parts.Double_layer_capacity.Impedance(freq))
 
-	total_impedance += dipoles.Parallel(parts.Cct, parts.Rct, freq) + parts.Diffusion.Impedance(freq)
-
-	return total_impedance
+	return z2 + parts.Solution_rasistance.Impedance(freq)
 }
 
-type RCLowpass struct {
-	Resistor  dipoles.Resistor
-	Capacitor dipoles.Capacitor
+type RandlesRB struct {
+	Solution_rasistance   dipoles.Resistor
+	Reaction_resistance   dipoles.Resistor
+	Double_layer_capacity dipoles.Capacitor
+	Diffusion_impedance   dipoles.WarburgReflective
 }
 
-func (parts RCLowpass) FreqResponse(freq float64) complex128 {
+func (parts RandlesRB) FreqResponse(freq float64) complex128 {
+	z1 := parts.Reaction_resistance.Impedance(freq) + parts.Diffusion_impedance.Impedance(freq)
+	z2 := 1 / (1/z1 + 1/parts.Double_layer_capacity.Impedance(freq))
 
-	return parts.Capacitor.Impedance(freq) / (parts.Resistor.Impedance(freq) + parts.Capacitor.Impedance(freq))
-
-}
-
-type RCHighpass struct {
-	Resistor  dipoles.Resistor
-	Capacitor dipoles.Capacitor
-}
-
-func (parts RCHighpass) FreqResponse(freq float64) complex128 {
-	z_tot := (parts.Resistor.Impedance(freq) + parts.Capacitor.Impedance(freq))
-	return parts.Resistor.Impedance(freq) / z_tot
-}
-
-type RCBandPass struct {
-	R1 dipoles.Resistor
-	C1 dipoles.Capacitor
-
-	R2 dipoles.Resistor
-	C2 dipoles.Capacitor
-}
-
-func (parts RCBandPass) FreqResponse(freq float64) complex128 {
-
-	//Da implementare correttamente
-	return 0
-}
-
-type IdealLCSeries struct {
-	C dipoles.Capacitor
-	L dipoles.Inductor
-}
-
-func (parts IdealLCSeries) FreqResponse(freq float64) complex128 {
-
-	series_impedance := parts.L.Impedance(freq) + parts.C.Impedance(freq)
-
-	return parts.C.Impedance(freq) / series_impedance
-
-}
-
-type RealLCSeries struct {
-	R dipoles.Resistor
-	C dipoles.Capacitor
-	L dipoles.Inductor
-}
-
-func (parts RealLCSeries) FreqResponse(freq float64) complex128 {
-
-	series_impedance := parts.L.Impedance(freq) + parts.C.Impedance(freq) + parts.R.Impedance(freq)
-
-	return parts.C.Impedance(freq) / series_impedance
-
-}
-
-type RCLBandpass struct {
-	R dipoles.Resistor
-	C dipoles.Capacitor
-	L dipoles.Inductor
-}
-
-func (parts RCLBandpass) FreqResponse(freq float64) complex128 {
-
-	LC_tank := dipoles.Parallel(parts.L, parts.C, freq)
-
-	return LC_tank / (parts.R.Impedance(freq) + LC_tank)
+	return z2 + parts.Solution_rasistance.Impedance(freq)
 }

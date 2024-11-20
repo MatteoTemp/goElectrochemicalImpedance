@@ -63,6 +63,32 @@ func (r Warburg) Impedance(freq float64) complex128 {
 	return complex(r.W_sigma/math.Sqrt(2*math.Pi*freq), -r.W_sigma/math.Sqrt(2*math.Pi*freq))
 }
 
+type WarburgTrasmissive struct {
+	Sigma          float64
+	Delta          float64
+	DiffusionCoeff float64
+}
+
+func (r WarburgTrasmissive) Impedance(freq float64) complex128 {
+
+	tan_factor := cmplx.Tanh(cmplx.Sqrt(complex(0.0, freq*r.Delta/r.DiffusionCoeff)))
+
+	return complex(r.Sigma/math.Sqrt(freq), 0.0) * tan_factor * complex(1.0, -1.0)
+}
+
+type WarburgReflective struct {
+	Sigma          float64
+	Delta          float64
+	DiffusionCoeff float64
+}
+
+func (r WarburgReflective) Impedance(freq float64) complex128 {
+
+	tan_factor := 1 / cmplx.Tanh(cmplx.Sqrt(complex(0.0, freq*r.Delta/r.DiffusionCoeff)))
+
+	return complex(r.Sigma/math.Sqrt(freq), 0.0) * tan_factor * complex(1.0, -1.0)
+}
+
 type Constant_phase_Element struct {
 	TParameter float64
 	Phi        float64
