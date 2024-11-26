@@ -26,3 +26,4 @@ OutputFiles
 main.go
 OutputFiles/Bode.csv
 OutputFiles/Nyq.csv
+/OutputFiles
