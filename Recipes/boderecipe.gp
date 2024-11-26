@@ -4,6 +4,7 @@ set grid
 set xtics font 'arial, 10' nomirror
 set ytics font 'arial, 13' nomirror
 set y2tics font 'arial, 13' nomirror
+
 set format x "%0.0e"
 set logscale x 10
 

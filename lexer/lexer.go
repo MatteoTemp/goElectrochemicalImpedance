@@ -15,6 +15,7 @@ const (
 
 	Left
 	Right
+	Series
 
 	END
 )
@@ -47,6 +48,8 @@ func (circuit *CDC_Code) Tokenize() error {
 			circuit.tokens = append(circuit.tokens, Warbourg)
 		case 'Q':
 			circuit.tokens = append(circuit.tokens, CPE)
+		case '-':
+			circuit.tokens = append(circuit.tokens, Series)
 		case '(':
 			circuit.tokens = append(circuit.tokens, Left)
 		case ')':
@@ -116,6 +119,8 @@ func (circuit *CDC_Code) Display() {
 			symbol = 'W'
 		case CPE:
 			symbol = 'Q'
+		case Series:
+			symbol = '-'
 		case Left:
 			symbol = '('
 		case Right:

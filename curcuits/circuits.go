@@ -21,6 +21,7 @@ func Nyquist_plot(circuit Circuit, filename string, min_logF float64, max_logF f
 		return errors.New("Upper bound cannot be nagative")
 	}
 	var decade_interval float64 = 1 / float64(ppdec)
+	fmt.Println(ppdec, decade_interval)
 
 	file, err := os.Create(filename)
 	if err != nil {
@@ -34,7 +35,7 @@ func Nyquist_plot(circuit Circuit, filename string, min_logF float64, max_logF f
 	Computation_start := time.Now()
 
 	var logf float64
-	for logf = min_logF; logf <= max_logF; logf += decade_interval {
+	for logf = min_logF; logf < max_logF; logf += decade_interval {
 		freq := math.Pow(10, logf)
 		r, i := dipoles.Nyquist(circuit.FreqResponse(freq))
 
@@ -60,6 +61,7 @@ func Bode(circuit Circuit, filename string, min_logF float64, max_logF float64, 
 		return errors.New("Upper bound cannot be nagative")
 	}
 	var decade_interval float64 = 1 / float64(ppdec)
+	fmt.Println(ppdec, decade_interval)
 
 	file, err := os.Create(filename)
 	if err != nil {
@@ -71,6 +73,7 @@ func Bode(circuit Circuit, filename string, min_logF float64, max_logF float64, 
 	defer writer.Flush()
 
 	Computation_start := time.Now()
+
 	var logf float64
 	for logf = min_logF; logf <= max_logF; logf += decade_interval {
 		freq := math.Pow(10, logf)
@@ -91,7 +94,6 @@ func Bode(circuit Circuit, filename string, min_logF float64, max_logF float64, 
 		fmt.Println("Plotting Error, ", err)
 		return err
 	}
-
 	return nil
 }
 
