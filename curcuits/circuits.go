@@ -97,6 +97,33 @@ func Bode(circuit Circuit, filename string, min_logF float64, max_logF float64, 
 	return nil
 }
 
+func Lasajous(circuit Circuit, freq float64) error {
+	file, err := os.Create("OutputFiles/Lasajous.csv")
+	if err != nil {
+		return errors.New("Cannot create output file ")
+	}
+	defer file.Close()
+
+	writer := csv.NewWriter(file)
+	defer writer.Flush()
+
+	Z := circuit.FreqResponse(freq)
+	//amplitude := cmplx.Abs(Z)
+	phase := cmplx.Phase(Z)
+
+	var t float64
+	for t = 0.0; t < 1.0; t += 0.001 {
+		//V=ZI
+		V := math.Sin(2 * math.Pi * t)
+		I := math.Sin(2*math.Pi*t + phase)
+		writer.Write(
+			[]string{fmt.Sprintf("%.9e", V), fmt.Sprintf("%.9e", I)},
+		)
+	}
+
+	return nil
+}
+
 type IdealNPElectrode struct {
 	SolutionResistance dipoles.Resistor
 	InterphaseCapacity dipoles.Capacitor
