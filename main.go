@@ -15,6 +15,9 @@ func main() {
 	}
 	//circuits.Nyquist_plot(circuit1, "OutputFiles/Nyq.csv", 0, 6, 100)
 	circuits.Bode(circuit1, "OutputFiles/Bode.csv", -3, 6, 100)
+	circuits.Lasajous(circuit1, 1)
 	circuits.Lasajous(circuit1, 10)
+	circuits.Lasajous(circuit1, 100)
+	circuits.Lasajous(circuit1, 10000)
 
 }

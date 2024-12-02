@@ -121,6 +121,13 @@ func Lasajous(circuit Circuit, freq float64) error {
 		)
 	}
 
+	command := exec.Command("gnuplot", "-p", "Recipes/LasajousRecipe.gp")
+	err = command.Run()
+	if err != nil {
+		fmt.Println("Plotting Error, ", err)
+		return err
+	}
+
 	return nil
 }
 
