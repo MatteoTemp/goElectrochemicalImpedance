@@ -37,9 +37,18 @@ func Nyquist_plot(circuit Circuit, filename string, min_logF float64, max_logF f
 	var logf float64
 	for logf = min_logF; logf < max_logF; logf += decade_interval {
 		freq := math.Pow(10, logf)
-		r, i := dipoles.Nyquist(circuit.FreqResponse(freq))
+		Z := circuit.FreqResponse(freq)
 
-		writer.Write([]string{fmt.Sprintf("%.9f", math.Pow(10, logf)), fmt.Sprintf("%.9f", r), fmt.Sprintf("%.9f", -i)})
+		r, i := dipoles.Nyquist(Z)
+
+		writer.Write(
+			[]string{fmt.Sprintf("%.9f", math.Pow(10, logf)),
+				fmt.Sprintf("%.9f", r),
+				fmt.Sprintf("%.9f", -i),
+				fmt.Sprintf("%.9f", cmplx.Abs(Z)),
+				fmt.Sprintf("%.9f", cmplx.Phase(Z)),
+			},
+		)
 	}
 
 	fmt.Println("Nyquist plot computation time: ", time.Since(Computation_start))

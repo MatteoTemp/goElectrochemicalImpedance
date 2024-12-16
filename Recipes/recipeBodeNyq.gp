@@ -1,5 +1,6 @@
 set datafile separator ","
 set grid
+set size square
 
 set ylabel "-Im(H) / Ohm"
 set xlabel "Re(H)/ Ohm"
