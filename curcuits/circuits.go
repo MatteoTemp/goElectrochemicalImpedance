@@ -16,7 +16,7 @@ type Circuit interface {
 	FreqResponse(float64) complex128
 }
 
-func Nyquist_plot(circuit Circuit, filename string, min_logF float64, max_logF float64, ppdec int) error {
+func Nyquist_plot(circuit Circuit, filename string, min_logF float64, max_logF float64, ppdec int, plot_3D bool) error {
 	if max_logF < 0 {
 		return errors.New("Upper bound cannot be nagative")
 	}
@@ -53,7 +53,13 @@ func Nyquist_plot(circuit Circuit, filename string, min_logF float64, max_logF f
 
 	fmt.Println("Nyquist plot computation time: ", time.Since(Computation_start))
 
-	command := exec.Command("gnuplot", "-p", "Recipes/recipeBodeNyq.gp")
+	var command *exec.Cmd
+
+	if plot_3D {
+		command = exec.Command("gnuplot", "-p", "Recipes/nyq3d.gp")
+	} else {
+		command = exec.Command("gnuplot", "-p", "Recipes/recipeBodeNyq.gp")
+	}
 	err = command.Run()
 
 	if err != nil {
@@ -147,6 +153,28 @@ type IdealNPElectrode struct {
 
 func (parts IdealNPElectrode) FreqResponse(freq float64) complex128 {
 	return dipoles.Series(parts.InterphaseCapacity, parts.SolutionResistance, freq)
+}
+
+type NonIdealNPElectrode struct {
+	SolutionResistance dipoles.Resistor
+	ImperfectDL        dipoles.Constant_phase_Element
+}
+
+func (parts NonIdealNPElectrode) FreqResponse(freq float64) complex128 {
+	return dipoles.Series(parts.ImperfectDL, parts.SolutionResistance, freq)
+}
+
+type RandlesNoDiff struct {
+	Solution_rasistance   dipoles.Resistor
+	Reaction_resistance   dipoles.Resistor
+	Double_layer_capacity dipoles.Capacitor
+}
+
+func (parts RandlesNoDiff) FreqResponse(freq float64) complex128 {
+	z1 := parts.Reaction_resistance.Impedance(freq)
+	z2 := 1 / (1/z1 + 1/parts.Double_layer_capacity.Impedance(freq))
+
+	return z2 + parts.Solution_rasistance.Impedance(freq)
 }
 
 type Randles struct {

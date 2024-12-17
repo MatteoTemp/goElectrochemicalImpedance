@@ -95,6 +95,9 @@ type Constant_phase_Element struct {
 }
 
 func (r Constant_phase_Element) Impedance(freq float64) complex128 {
-	return cmplx.Pow(complex(0, -1/(2*math.Pi*freq)), complex(r.Phi, 0)) / complex(r.TParameter, 0)
+	return complex(
+		math.Cos(0.5*math.Pi*r.Phi)/(r.TParameter*math.Pow(freq, r.Phi)),
+		-math.Sin(0.5*math.Pi*r.Phi)/(r.TParameter*math.Pow(freq, r.Phi)),
+	)
 
 }
