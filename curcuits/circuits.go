@@ -191,6 +191,20 @@ func (parts Randles) FreqResponse(freq float64) complex128 {
 	return z2 + parts.Solution_rasistance.Impedance(freq)
 }
 
+type NIRandles struct {
+	Solution_rasistance   dipoles.Resistor
+	Reaction_resistance   dipoles.Resistor
+	Double_layer_capacity dipoles.Constant_phase_Element
+	Diffusion_impedance   dipoles.Warburg
+}
+
+func (parts NIRandles) FreqResponse(freq float64) complex128 {
+	z1 := parts.Reaction_resistance.Impedance(freq) + parts.Diffusion_impedance.Impedance(freq)
+	z2 := 1 / (1/z1 + 1/parts.Double_layer_capacity.Impedance(freq))
+
+	return z2 + parts.Solution_rasistance.Impedance(freq)
+}
+
 type RandlesTB struct {
 	Solution_rasistance   dipoles.Resistor
 	Reaction_resistance   dipoles.Resistor
