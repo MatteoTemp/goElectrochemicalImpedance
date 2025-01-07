@@ -232,3 +232,17 @@ func (parts RandlesRB) FreqResponse(freq float64) complex128 {
 
 	return z2 + parts.Solution_rasistance.Impedance(freq)
 }
+
+type ButterworthVanDyke_nocontact struct {
+	Dissipation_resistance dipoles.Resistor
+	Crystal_Capacity       dipoles.Capacitor
+	Crystal_inertia        dipoles.Inductor
+}
+
+func (parts ButterworthVanDyke_nocontact) FreqResponse(freq float64) complex128 {
+
+	return parts.Dissipation_resistance.Impedance(freq) +
+		parts.Crystal_inertia.Impedance(freq) +
+		parts.Crystal_Capacity.Impedance(freq)
+
+}
