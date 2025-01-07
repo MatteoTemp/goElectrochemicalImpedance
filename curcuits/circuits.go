@@ -246,3 +246,20 @@ func (parts ButterworthVanDyke_nocontact) FreqResponse(freq float64) complex128 
 		parts.Crystal_Capacity.Impedance(freq)
 
 }
+
+type ButterworthVanDyke struct {
+	Dissipation_resistance dipoles.Resistor
+	Crystal_Capacity       dipoles.Capacitor
+	Crystal_inertia        dipoles.Inductor
+	Parassitic_capacitance dipoles.Capacitor
+}
+
+func (parts ButterworthVanDyke) FreqResponse(freq float64) complex128 {
+
+	Zideal := parts.Dissipation_resistance.Impedance(freq) +
+		parts.Crystal_inertia.Impedance(freq) +
+		parts.Crystal_Capacity.Impedance(freq)
+
+	return 1 / (1/Zideal + 1/parts.Parassitic_capacitance.Impedance(freq))
+
+}
